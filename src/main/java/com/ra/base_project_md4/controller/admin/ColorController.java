@@ -1,4 +1,4 @@
-package com.ra.base_project_md4.controller;
+package com.ra.base_project_md4.controller.admin;
 
 import com.ra.base_project_md4.model.dto.request.ColorRequest;
 import com.ra.base_project_md4.model.dto.response.ColorResponse;
@@ -10,9 +10,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.HashMap;
-import java.util.Map;
 
 @RestController
 @RequestMapping("/api/v1/color")
@@ -26,21 +23,16 @@ public class ColorController {
             @RequestParam(defaultValue = "5") Integer pageSize,
             @RequestParam(defaultValue = "id") String sortBy,
             @RequestParam(defaultValue = "asc") String sortDirect,
-            @RequestParam(defaultValue = "", required = false) String sizeName
+            @RequestParam(defaultValue = "", required = false) String colorName
     ) {
-        Page<Color> colors = colorService.findAll(sizeName, pageNo, pageSize, sortBy, sortDirect);
-        return new ResponseEntity<>(colors.getContent(), HttpStatus.OK);
+        Page<Color> colors = colorService.findAll(colorName, pageNo, pageSize, sortBy, sortDirect);
+        return new ResponseEntity<>(colors, HttpStatus.OK);
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<?> getSizeById(@PathVariable Long id) {
-            Color color = colorService.findById(id);
-        if (color != null) {
-            return new ResponseEntity<>(color, HttpStatus.OK);
-        }
-        Map<String, String> error = new HashMap<>();
-        error.put("mess", "Not Found");
-        return new ResponseEntity<>(error,HttpStatus.NOT_FOUND);
+    public ResponseEntity<?> getColorById(@PathVariable Long id) {
+
+        return new ResponseEntity<>(colorService.findById(id),HttpStatus.OK);
     }
 
     @PostMapping("/create")

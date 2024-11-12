@@ -3,6 +3,7 @@ package com.ra.base_project_md4.service.impl;
 
 import com.ra.base_project_md4.model.dto.request.SizeRequest;
 import com.ra.base_project_md4.model.dto.response.SizeResponse;
+import com.ra.base_project_md4.model.entity.Color;
 import com.ra.base_project_md4.model.entity.Size;
 import com.ra.base_project_md4.repository.SizeRepository;
 import com.ra.base_project_md4.service.SizeService;
@@ -42,7 +43,12 @@ public class SizeServiceImpl implements SizeService {
 
     @Override
     public Size findById(Long id) {
-        return sizeRepository.findById(id).orElseThrow();
+        Size size=sizeRepository.findById(id).orElseThrow();
+        if (size != null) {
+            return size;
+        }
+        return null;
+
     }
 
     @Override

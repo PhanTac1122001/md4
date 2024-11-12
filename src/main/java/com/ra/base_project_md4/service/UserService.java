@@ -11,5 +11,7 @@ public interface UserService {
 
     UserResponse update(UserRequest userRequest,Long userId);
 
+    User changeStatus(Long userId);
+
     User findById(Long id);
 }

@@ -1,4 +1,4 @@
-package com.ra.base_project_md4.controller;
+package com.ra.base_project_md4.controller.admin;
 
 
 import com.ra.base_project_md4.model.dto.request.SizeRequest;
@@ -11,9 +11,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.HashMap;
-import java.util.Map;
 
 @RestController
 @RequestMapping("/api/v1/size")
@@ -30,18 +27,14 @@ public class SizeController {
             @RequestParam(defaultValue = "", required = false) String sizeName
     ) {
         Page<Size> sizes = sizeService.findAll(sizeName, pageNo, pageSize, sortBy, sortDirect);
-        return new ResponseEntity<>(sizes.getContent(), HttpStatus.OK);
+        return new ResponseEntity<>(sizes, HttpStatus.OK);
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<?> getSizeById(@PathVariable Long id) {
-        Size size = sizeService.findById(id);
-        if (size != null) {
-            return new ResponseEntity<>(size, HttpStatus.OK);
-        }
-        Map<String, String> error = new HashMap<>();
-        error.put("mess", "Not Found");
-        return new ResponseEntity<>(error,HttpStatus.NOT_FOUND);
+
+            return new ResponseEntity<>(sizeService.findById(id), HttpStatus.OK);
+
     }
 
     @PostMapping("/create")

@@ -10,7 +10,12 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+
+import java.util.HashMap;
+import java.util.Map;
 
 @Service
 @RequiredArgsConstructor
@@ -58,7 +63,11 @@ public class ColorServiceImpl implements ColorService {
 
     @Override
     public Color findById(Long id) {
-        return colorRepository.findById(id).orElseThrow();
+        Color color=colorRepository.findById(id).orElseThrow();
+        if (color != null) {
+            return color;
+        }
+        return null;
     }
 
     @Override
