@@ -16,7 +16,7 @@ public class UserRequest {
 
     private String fullName;
 
-    private Boolean status;
+
 
     private MultipartFile avatar;
 
@@ -24,7 +24,6 @@ public class UserRequest {
 
     private String address;
 
-    private Date updatedAt;
 
 
 }

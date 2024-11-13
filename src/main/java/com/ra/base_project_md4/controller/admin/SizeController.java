@@ -13,7 +13,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/api/v1/size")
+@RequestMapping("/api/v1/admin/size")
 @RequiredArgsConstructor
 public class SizeController {
     private final SizeService sizeService;

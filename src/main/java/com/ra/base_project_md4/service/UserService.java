@@ -1,6 +1,8 @@
 package com.ra.base_project_md4.service;
 
 
+import com.ra.base_project_md4.exception.CustomException;
+import com.ra.base_project_md4.model.dto.request.ChangePassword;
 import com.ra.base_project_md4.model.dto.request.UserRequest;
 import com.ra.base_project_md4.model.dto.response.UserResponse;
 import com.ra.base_project_md4.model.entity.User;
@@ -14,4 +16,6 @@ public interface UserService {
     User changeStatus(Long userId);
 
     User findById(Long id);
+
+    User changePass(ChangePassword changePassword, Long userId) throws CustomException;
 }

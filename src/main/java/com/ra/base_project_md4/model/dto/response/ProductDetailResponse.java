@@ -23,9 +23,7 @@ public class ProductDetailResponse {
 
     private Product product;
 
-
     private Color color;
-
 
     private Size size;
 

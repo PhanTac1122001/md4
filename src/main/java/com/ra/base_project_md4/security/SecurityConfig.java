@@ -33,7 +33,8 @@ public class SecurityConfig {
                 .csrf(AbstractHttpConfigurer ::disable)
                 .authenticationProvider(authenticationProvider())
                 .authorizeHttpRequests(auth ->{
-                    auth.requestMatchers("/api/v1/color").hasAuthority("ADMIN");
+                    auth.requestMatchers("/api/v1/admin/color").hasAuthority("ADMIN");
+                    auth.requestMatchers("/api/v1/user").hasAuthority("USER");
                     auth.anyRequest().permitAll();
                 }).sessionManagement(auth ->
                         auth.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
