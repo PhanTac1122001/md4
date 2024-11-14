@@ -2,6 +2,7 @@ package com.ra.base_project_md4.advice;
 
 
 import com.ra.base_project_md4.exception.CustomException;
+import com.ra.base_project_md4.exception.InvalidOrderStatusException;
 import com.ra.base_project_md4.model.dto.error.DataError;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -38,5 +39,14 @@ public class ControllerAdvice {
         map.put("message",exception.getMessage());
 
         return new DataError<>(map,400);
+    }
+    @ExceptionHandler(InvalidOrderStatusException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public DataError<Map<String, String>> handleInvalidOrderStatusException(InvalidOrderStatusException exception) {
+        Map<String, String> errorResponse = new HashMap<>();
+        errorResponse.put("status", "error");
+        errorResponse.put("message", exception.getMessage());
+
+        return new DataError<>(errorResponse,400);
     }
 }

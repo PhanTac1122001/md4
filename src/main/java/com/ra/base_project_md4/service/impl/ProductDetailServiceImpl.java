@@ -111,4 +111,9 @@ public class ProductDetailServiceImpl implements ProductDetailService {
     public void delete(Long id) {
         productDetailRepository.deleteById(id);
     }
+
+    @Override
+    public void save(ProductDetail productDetail) {
+        productDetailRepository.save(productDetail);
+    }
 }

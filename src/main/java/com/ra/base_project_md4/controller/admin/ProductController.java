@@ -27,9 +27,9 @@ public class ProductController {
             @RequestParam(defaultValue = "5") Integer pageSize,
             @RequestParam(defaultValue = "id") String sortBy,
             @RequestParam(defaultValue = "asc") String sortDirect,
-            @RequestParam(defaultValue = "", required = false) String categoryName
+            @RequestParam(defaultValue = "", required = false) String productSearch
     ) {
-        Page<Product> products = productService.findAll(categoryName, pageNo, pageSize, sortBy, sortDirect);
+        Page<Product> products = productService.findAll(productSearch, pageNo, pageSize, sortBy, sortDirect);
         return new ResponseEntity<>(products, HttpStatus.OK);
     }
 

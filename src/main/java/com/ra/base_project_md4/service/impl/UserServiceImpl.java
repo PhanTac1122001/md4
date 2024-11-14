@@ -59,17 +59,38 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public UserResponse update(UserRequest userRequest, Long userId) {
-        String imgFile = uploadService.uploadFile(userRequest.getAvatar());
-        User user=findById(userId);
-        user.setAddress(userRequest.getAddress());
-        user.setAvatar(imgFile);
-        user.setEmail(userRequest.getEmail());
+    public UserResponse update(UserRequest userRequest, Long userId) throws CustomException {
+
+        User user = findById(userId);
+        if (user == null) {
+            throw new CustomException("User not found with id: " + userId);
+        }
+
+
+        String imgFile = null;
+        if (userRequest.getAvatar() != null && !userRequest.getAvatar().isEmpty()) {
+            imgFile = uploadService.uploadFile(userRequest.getAvatar());
+            user.setAvatar(imgFile);
+        }
+
+        if (userRequest.getAddress() != null && !userRequest.getAddress().isEmpty()) {
+            user.setAddress(userRequest.getAddress());
+        }
+        if (userRequest.getPhone() != null && !userRequest.getPhone().isEmpty()) {
+            user.setPhone(userRequest.getPhone());
+        }
+        if (userRequest.getFullName() != null && !userRequest.getFullName().isEmpty()) {
+            user.setFullName(userRequest.getFullName());
+        }
+        if (userRequest.getEmail() != null && !userRequest.getEmail().isEmpty()) {
+            user.setEmail(userRequest.getEmail());
+        }
+
+
         user.setUpdatedAt(new Date());
-        user.setFullName(userRequest.getFullName());
-        user.setPhone(userRequest.getPhone());
-        user.setStatus(true);
-        User userUpdate=userRepository.save(user);
+
+        User userUpdate = userRepository.save(user);
+
         return UserResponse.builder()
                 .id(userUpdate.getId())
                 .username(userUpdate.getUsername())
@@ -77,12 +98,11 @@ public class UserServiceImpl implements UserService {
                 .avatar(userUpdate.getAvatar())
                 .email(userUpdate.getEmail())
                 .address(userUpdate.getAddress())
-                .fullName(userRequest.getFullName())
+                .fullName(userUpdate.getFullName())
                 .status(userUpdate.getStatus())
                 .updatedAt(userUpdate.getUpdatedAt())
                 .build();
     }
-
     @Override
     public User findById(Long id) {
         return userRepository.findById(id).orElseThrow();
@@ -105,7 +125,7 @@ public class UserServiceImpl implements UserService {
         }
 
         user.setPassword(passwordEncoder.encode(changePassword.getNewPass()));
-        user.setStatus(true);
+        user.setUpdatedAt(new Date());
 
         return userRepository.save(user);
     }

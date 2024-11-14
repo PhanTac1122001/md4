@@ -8,15 +8,14 @@ import com.ra.base_project_md4.model.entity.*;
 import com.ra.base_project_md4.repository.OrderDetailRepository;
 import com.ra.base_project_md4.repository.OrderRepository;
 import com.ra.base_project_md4.service.OrderService;
+import com.ra.base_project_md4.service.ProductDetailService;
 import com.ra.base_project_md4.service.ShoppingCartService;
 import com.ra.base_project_md4.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import java.util.Calendar;
-import java.util.Date;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -25,12 +24,10 @@ public class OrderServiceImpl implements OrderService {
     private final OrderRepository orderRepository;
     private final UserService userService;
     private final OrderDetailRepository orderDetailRepository;
-
+    private final ProductDetailService productDetailService;
     @Override
-    public List<Order> findOrderByUser(Long userId) {
-        User user = userService.findById(userId);
-
-        return orderRepository.findOrderByUser(user);
+    public List<Order> findAll() {
+        return orderRepository.findAll();
     }
 
     @Override
@@ -68,6 +65,17 @@ public class OrderServiceImpl implements OrderService {
 
 
         shoppingCarts.forEach(cart -> {
+            ProductDetail productDetail = cart.getProductDetail();
+            int currentStock = productDetail.getStock();
+            int quantityOrdered = cart.getQuantity();
+
+            if (quantityOrdered > currentStock) {
+                try {
+                    throw new CustomException("Không đủ hàng trong kho cho sản phẩm: " + productDetail.getProduct().getProductName());
+                } catch (CustomException e) {
+                    throw new RuntimeException(e);
+                }
+            }
             OrderDetail orderDetail = OrderDetail.builder()
                     .order(savedOrder)
                     .productDetail(cart.getProductDetail())
@@ -77,6 +85,8 @@ public class OrderServiceImpl implements OrderService {
                     .build();
 
             orderDetailRepository.save(orderDetail);
+            productDetail.setStock(currentStock - quantityOrdered);
+            productDetailService.save(productDetail);
         });
 
         shoppingCartService.deleteAll(userId);
@@ -97,4 +107,97 @@ public class OrderServiceImpl implements OrderService {
                 .receivedAt(savedOrder.getReceivedAt())
                 .build();
     }
+
+    @Override
+    public List<OrderResponse> getOrderHistory(Long userId) {
+        User user=userService.findById(userId);
+        List<Order> orders = orderRepository.findOrderByUser(user);
+
+        // Chuyển các đơn hàng thành danh sách các OrderResponse
+        return orders.stream()
+                .map(order -> OrderResponse.builder()
+                        .id(order.getId())
+                        .serialNumber(order.getSerialNumber())
+                        .totalPrice(order.getTotalPrice())
+                        .status(order.getStatus())
+                        .createdAt(order.getCreatedAt())
+                        .receivedAt(order.getReceivedAt())
+                        .build())
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public List<Order> findOrderBySerialNumberAndUser(String serialNumber,Long userId) {
+        User user=userService.findById(userId);
+        if (user == null) {
+            return Collections.emptyList();
+        }
+        return orderRepository.findOrderBySerialNumberAndUser(serialNumber,user);
+    }
+
+    @Override
+    public List<Order> findOrderByStatusAndUser(OrderStatus status, Long userId) {
+        User user=userService.findById(userId);
+        if (user == null) {
+            return Collections.emptyList();
+        }
+        return orderRepository.findOrderByStatusAndUser(status,user);
+    }
+
+    @Override
+    public List<Order> findOrderByStatus(OrderStatus status) {
+        return orderRepository.findOrderByStatus(status);
+    }
+
+    @Override
+    public Order findById(Long id) {
+        return orderRepository.findById(id).orElseThrow();
+    }
+
+    @Override
+    public OrderResponse updateOrder(Long id, OrderStatus status) throws CustomException {
+        Order order = orderRepository.findById(id)
+
+                .orElseThrow(() -> new CustomException("Không tìm thấy đơn hàng với ID: " + id));
+
+
+
+        if (!isStatusTransitionAllowed(order.getStatus(), status)) {
+            throw new CustomException("Chuyển đổi trạng thái không hợp lệ từ " + order.getStatus() + " sang " + status);
+        }
+        order.setStatus(status);
+        Order orderUpdate=orderRepository.save(order);
+        return OrderResponse.builder()
+                .id(orderUpdate.getId())
+                .serialNumber(orderUpdate.getSerialNumber())
+                .user(orderUpdate.getUser())
+                .note(orderUpdate.getNote())
+                .receiveAddress(orderUpdate.getReceiveAddress())
+                .receiveName(orderUpdate.getReceiveName())
+                .receivePhone(orderUpdate.getReceivePhone())
+                .createdAt(orderUpdate.getCreatedAt())
+                .receivedAt(orderUpdate.getReceivedAt())
+                .status(orderUpdate.getStatus())
+                .build();
+    }
+    private boolean isStatusTransitionAllowed(OrderStatus currentStatus, OrderStatus newStatus) {
+        switch (currentStatus) {
+            case WAITING:
+                return newStatus == OrderStatus.CONFIRM || newStatus == OrderStatus.CANCEL || newStatus == OrderStatus.DENIED;
+            case CONFIRM:
+                return newStatus == OrderStatus.DELIVERY || newStatus == OrderStatus.CANCEL;
+            case DELIVERY:
+                return newStatus == OrderStatus.SUCCESS || newStatus == OrderStatus.CANCEL;
+            case SUCCESS:
+
+                return false ;
+            case CANCEL:
+                return false ;
+            case DENIED:
+                return false ;
+            default:
+                return false;
+        }
+        }
+
 }

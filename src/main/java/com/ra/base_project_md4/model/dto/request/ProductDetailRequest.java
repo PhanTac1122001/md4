@@ -6,6 +6,7 @@ import com.ra.base_project_md4.model.entity.Size;
 import jakarta.persistence.Column;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.validation.constraints.NotBlank;
 import lombok.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -15,6 +16,7 @@ import org.springframework.web.multipart.MultipartFile;
 @Setter
 @Builder
 public class ProductDetailRequest {
+    private Long id;
 
     private String productDetailName;
 

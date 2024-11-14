@@ -11,7 +11,7 @@ import org.springframework.data.domain.Page;
 public interface UserService {
     Page<User> findAll(String username, Integer pageNo, Integer pageSize, String sortBy, String sortDirect);
 
-    UserResponse update(UserRequest userRequest,Long userId);
+    UserResponse update(UserRequest userRequest,Long userId) throws CustomException;
 
     User changeStatus(Long userId);
 

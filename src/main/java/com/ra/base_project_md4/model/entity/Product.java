@@ -39,4 +39,6 @@ public class Product {
 
     @Column(nullable = false)
     private Boolean status;
+
+    private boolean isFeatured;
 }

@@ -1,5 +1,6 @@
 package com.ra.base_project_md4.controller.admin;
 
+import com.ra.base_project_md4.exception.CustomException;
 import com.ra.base_project_md4.model.dto.request.UserRequest;
 import com.ra.base_project_md4.model.dto.response.UserResponse;
 import com.ra.base_project_md4.model.entity.User;
@@ -27,7 +28,7 @@ public class UserController {
         return new ResponseEntity<>(users, HttpStatus.OK);
     }
     @PutMapping("/{id}")
-    public ResponseEntity<UserResponse> update(@PathVariable Long id, @ModelAttribute UserRequest userRequest){
+    public ResponseEntity<UserResponse> update(@PathVariable Long id, @ModelAttribute UserRequest userRequest) throws CustomException {
         UserResponse userUpdate = userService.update(userRequest,id);
         return new ResponseEntity<>(userUpdate,HttpStatus.OK);
 

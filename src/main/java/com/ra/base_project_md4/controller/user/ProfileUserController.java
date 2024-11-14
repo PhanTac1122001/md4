@@ -31,7 +31,7 @@ public class ProfileUserController {
 
     }
     @PutMapping
-    public ResponseEntity<UserResponse> update(@AuthenticationPrincipal UserPrinciple userPrinciple, @ModelAttribute UserRequest userRequest){
+    public ResponseEntity<UserResponse> update(@AuthenticationPrincipal UserPrinciple userPrinciple, @ModelAttribute UserRequest userRequest) throws CustomException {
         Long userId=userPrinciple.getUser().getId();
         UserResponse userUpdate = userService.update(userRequest,userId);
         return new ResponseEntity<>(userUpdate,HttpStatus.OK);

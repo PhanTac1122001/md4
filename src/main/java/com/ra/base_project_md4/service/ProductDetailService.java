@@ -19,4 +19,5 @@ public interface ProductDetailService {
 
     void delete(Long id);
 
+    void save(ProductDetail productDetail);
 }

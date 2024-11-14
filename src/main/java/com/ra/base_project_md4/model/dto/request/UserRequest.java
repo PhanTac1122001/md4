@@ -17,7 +17,6 @@ public class UserRequest {
     private String fullName;
 
 
-
     private MultipartFile avatar;
 
     private String phone;
